@@ -12,24 +12,23 @@ app.get('/', function (req, res) {
 });
 
 router.route('').get(function(req, resp){
-    resp.send({list: 'This is the list of locations'});
+    resp.json({list: 'This is the list of locations'});
 });
 
 router.route('/:id').get(function(req, resp){
-    resp.send({list: 'Location with id: '+req.params.id});
+    resp.json({list: 'Location with id: '+req.params.id});
 });
 
 router.route('').post(function(req, resp){
-    console.log(req.body);
-    resp.send({list: 'Creating location with data: '+req.body});
+    resp.json({list: 'Creating location with data: '+req.body});
 });
 
 router.route('/:id').put(function(req, resp){
-    resp.send({list: 'Updating location with id: '+req.params.id+', data = '+req.body});
+    resp.json({list: 'Updating location with id: '+req.params.id+', data = '+req.body});
 });
 
 router.route('/:id').delete(function(req, resp){
-    resp.send({list: 'Deleting location with id: '+req.params.id});
+    resp.json({list: 'Deleting location with id: '+req.params.id});
 });
 
 app.use('/api/locations', router);
