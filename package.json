@@ -11,6 +11,8 @@
   "dependencies": {
     "express": "^4.16.4",
     "gulp": "^3.9.1",
-    "gulp-nodemon": "^2.4.1"
+    "gulp-nodemon": "^2.4.1",
+    "mysql2": "^1.6.4",
+    "sequelize": "^4.41.2"
   }
 }
