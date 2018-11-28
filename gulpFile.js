@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var nodemon = require('gulp-nodemon');
+var babel = require('gulp-babel');
 
 var config = {
     buildDir: 'build',
@@ -14,7 +15,7 @@ gulp.task('default', ['build-js'], function(){
             PORT: 3000
         },
         tasks: ['build-js'],
-        ignore: ['node_modules/**', config.buildDir+'/**']
+        ignore: [config.buildDir+'/**']
     })
     .on('restart', function(){
        console.log("Restarting...");
@@ -22,7 +23,11 @@ gulp.task('default', ['build-js'], function(){
 });
 
 gulp.task('build-js', function(){
-    return gulp.src( config.srcJs+'/**/*.js')
-        //.pipe()
+    gulp.src( config.srcJs+'/**/*.js')
+        .pipe(babel({
+            presets: ['@babel/preset-react']
+        })).on('error', function(err){
+            console.log('JSX compilation failed', err);
+        })
         .pipe(gulp.dest(config.buildDir));
 });

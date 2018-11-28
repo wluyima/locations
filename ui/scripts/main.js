@@ -1,3 +1,7 @@
-'use strict'
+const root = document.querySelector('#root');
 
-Hello
+const Home = function() {
+    return (<div>Home</div>);
+};
+
+ReactDOM.render(<Home />, root);

@@ -10,9 +10,15 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
-    "gulp": "^3.9.1",
-    "gulp-nodemon": "^2.4.1",
     "mysql2": "^1.6.4",
+    "react": "^16.6.3",
     "sequelize": "^4.41.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-react": "^7.0.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^8.0.0",
+    "gulp-nodemon": "^2.4.1"
   }
 }
