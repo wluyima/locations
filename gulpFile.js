@@ -26,7 +26,8 @@ gulp.task('build-js', function(){
     gulp.src( config.srcJs+'/**/*.js')
         .pipe(babel({
             presets: ['@babel/preset-react']
-        })).on('error', function(err){
+        }))
+        .on('error', function(err){
             console.log('JSX compilation failed', err);
         })
         .pipe(gulp.dest(config.buildDir));
