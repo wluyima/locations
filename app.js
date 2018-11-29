@@ -41,10 +41,6 @@ const Location = sequelize.define('location', {
 //Create the table
 Location.sync();
 
-app.get('/', function (req, res) {
-    res.redirect("index.html");
-});
-
 router.route('').get(function(req, resp){
     Location.findAll().then((locations) => {
         resp.json(locations);
@@ -89,9 +85,9 @@ router.route('/:id').delete(function(req, resp){
 });
 
 app.use('/api/locations', router);
-
 app.use(express.static('.'));
 app.use(express.static('build'));
+app.use("/", express.static('index.html'));
 
 app.listen(port, function(){
     console.log('Running Locations API on port '+port);

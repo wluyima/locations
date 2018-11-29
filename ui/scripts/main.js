@@ -1,8 +1,12 @@
 const root = document.querySelector('#root');
-const BASE_URL = 'http://localhost:3000/api/locations'
+const BASE_URL = 'http://localhost:3000/api/locations';
+const HashRouter = ReactRouterDOM.HashRouter;
+const Route =  ReactRouterDOM.Route;
+const Link =  ReactRouterDOM.Link;
+const Switch = window.ReactRouterDOM.Switch;
 
 //TODO use browserify so that require these from separate file rather than in same file
-class Edit extends React.Component{ 
+class Edit extends React.Component { 
     render() {
         return (
             <div>
@@ -11,14 +15,40 @@ class Edit extends React.Component{
                 <div>City</div>
                 <div>State</div>
                 <div>Zipcode</div>
+                <p>
+                    <Link to="/">Cancel</Link>
+                </p>
             </div>
         );
     }
 }
 
-class Locations extends React.Component{
+class Locations extends React.Component {
+
+    constructor(props){
+        super(props);
+        this.state = {
+            locations : []
+        };
+    }
+
+    componentDidMount(){
+        var component = this;
+        axios.get(BASE_URL)
+            .then(function(response){
+                component.setState({...component.state, locations: response.data});
+            }).catch(function(err){
+                console.error('ERROR:'+err);
+            });
+    }
+
+    navigate(){
+        console.log('navigating');
+        this.setState({...this.state, edit: true});
+    }
+
     render(){
-        var locations = this.props.locations.map((loc) => {
+        var locations = this.state.locations.map((loc) => {
             return (
                 <tr key={loc.id}>
                     <td>{loc.address}</td>
@@ -26,9 +56,9 @@ class Locations extends React.Component{
                     <td>{loc.state}</td>
                     <td>{loc.zipcode}</td>
                     <td>
-                        <a className="link" title="Edit">Edit</a>
+                        <Link to="edit" title="Edit">Edit</Link>
                         &nbsp;
-                        <a className="link" title="Delete">Delete</a>
+                        <Link to="delete" title="Delete">Delete</Link>
                     </td>
                 </tr>
             );
@@ -52,31 +82,20 @@ class Locations extends React.Component{
 }
 
 class Main extends React.Component {
-    
-    constructor(props){
-        super(props);
-        this.state = {
-            locations : []
-        };
-    }
-
-    componentDidMount(){
-        var component = this;
-        axios.get(BASE_URL)
-            .then(function(response){
-                component.setState({...component.state, locations: response.data});
-            }).catch(function(err){
-                console.error('ERROR:'+err);
-            });
-    }
 
     render() {
         return (
             <div>
-                <Locations locations={this.state.locations} />    
+                <HashRouter>
+                    <Switch>
+                        <Route exact path="/" component={Locations} />
+                        <Route name="edit" component={Edit} />
+                    </Switch> 
+                </HashRouter>
             </div>
         );
     }
+
 }
 
 ReactDOM.render(<Main />, root);
