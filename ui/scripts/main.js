@@ -25,6 +25,11 @@ class Locations extends React.Component{
                     <td>{loc.city}</td>
                     <td>{loc.state}</td>
                     <td>{loc.zipcode}</td>
+                    <td>
+                        <a className="link" title="Edit">Edit</a>
+                        &nbsp;
+                        <a className="link" title="Delete">Delete</a>
+                    </td>
                 </tr>
             );
         });
@@ -32,13 +37,11 @@ class Locations extends React.Component{
         return (
             <div>
                 <h2>Locations</h2>
+                <p><button>Add New Location</button></p>
                 <table border="1" cellSpacing="1" cellPadding="5">
                     <thead>
                         <tr>
-                            <th>Street</th>
-                            <th>City</th>
-                            <th>State</th>
-                            <th>Zipcode</th>
+                            <th>Street</th><th>City</th><th>State</th><th>Zipcode</th><th>Action</th>
                         </tr>
                     </thead>
                     <tbody>{locations}</tbody>
@@ -64,8 +67,6 @@ class Main extends React.Component {
                 component.setState({...component.state, locations: response.data});
             }).catch(function(err){
                 console.error('ERROR:'+err);
-            }).then(function(){
-                console.log('Done!');
             });
     }
 
