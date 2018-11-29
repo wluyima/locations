@@ -55,11 +55,6 @@ class Locations extends React.Component {
             });
     }
 
-    navigate(){
-        console.log('navigating');
-        this.setState({...this.state, edit: true});
-    }
-
     render(){
         var locations = this.state.locations.map((loc) => {
             return (
