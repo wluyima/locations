@@ -87,7 +87,7 @@ router.route('/:id').delete(function(req, resp){
 app.use('/api/locations', router);
 app.use(express.static('.'));
 app.use(express.static('build'));
-app.use("/", express.static('index.html'));
+app.use("/*", express.static('index.html'));
 
 app.listen(port, function(){
     console.log('Running Locations API on port '+port);

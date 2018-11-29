@@ -1,6 +1,6 @@
 const root = document.querySelector('#root');
 const BASE_URL = 'http://localhost:3000/api/locations';
-const HashRouter = ReactRouterDOM.HashRouter;
+const Router = ReactRouterDOM.BrowserRouter;
 const Route =  ReactRouterDOM.Route;
 const Link =  ReactRouterDOM.Link;
 const Switch = window.ReactRouterDOM.Switch;
@@ -17,6 +17,19 @@ class Edit extends React.Component {
                 <div>Zipcode</div>
                 <p>
                     <Link to="/">Cancel</Link>
+                </p>
+            </div>
+        );
+    }
+}
+
+class NoMatch extends React.Component { 
+    render() {
+        return (
+            <div>
+                <h3>Page Not Fond</h3>
+                <p>
+                    <Link to="/">Home</Link>
                 </p>
             </div>
         );
@@ -86,12 +99,13 @@ class Main extends React.Component {
     render() {
         return (
             <div>
-                <HashRouter>
+                <Router>
                     <Switch>
                         <Route exact path="/" component={Locations} />
-                        <Route name="edit" component={Edit} />
+                        <Route name="edit" path="/edit" component={Edit} />
+                        <Route component={NoMatch} />
                     </Switch> 
-                </HashRouter>
+                </Router>
             </div>
         );
     }
