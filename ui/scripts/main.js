@@ -1,24 +1,63 @@
 const root = document.querySelector('#root');
-const BASE_URL = 'http://localhost:3000/api/locations';
 const Router = ReactRouterDOM.BrowserRouter;
 const Route =  ReactRouterDOM.Route;
 const Link =  ReactRouterDOM.Link;
-const Switch = window.ReactRouterDOM.Switch;
+const Switch = ReactRouterDOM.Switch;
+
+const BASE_URL = 'http://localhost:3000/api/locations';
 
 //TODO use browserify so that require these from separate file rather than in same file
-class Edit extends React.Component { 
+class Edit extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {location: {}};
+    }
+
+    componentDidMount() {
+        var component = this;
+        if(this.props.match.params.id){
+            axios.get(BASE_URL+'/'+this.props.match.params.id)
+                .then(function(response){
+                    component.state = {...component.state, location: response.data};
+                }).catch(function(err){
+                    console.error('ERROR:'+err);
+                });
+        }
+    }
+
+    onChange() {
+        console.log('Change..');
+    }
+
+    save(e) {
+        e.preventDefault();
+        console.log('Saving..');
+        this.props.history.goBack();
+    }
+
+    cancel(e) {
+        e.preventDefault();
+        this.props.history.goBack();
+    }
+
     render() {
         return (
-            <div>
-                <h2>Title</h2>
-                <div>Address</div>
-                <div>City</div>
-                <div>State</div>
-                <div>Zipcode</div>
+            <form onSubmit={this.save.bind(this)}>
+                <h2>{this.props.match.params.id ? 'Edit Location' : 'New Location'}</h2>
+                {this.props.match.params.id && 'Address'}
+                <p><input value={this.state.location.address} onChange={this.onChange} placeholder="Address" /></p>
+                {this.props.match.params.id && 'City'}
+                <p><input value={this.state.location.city} onChange={this.onChange} placeholder="City" /></p>
+                {this.props.match.params.id && 'State'}
+                <p><input value={this.state.location.state} onChange={this.onChange} placeholder="State" /></p>
+                {this.props.match.params.id && 'Code'}
+                <p><input value={this.state.location.zipcode} onChange={this.onChange} placeholder="Zip Code" /></p>
                 <p>
-                    <Link to="/">Cancel</Link>
+                    <button type="submit">Save</button>
+                    &nbsp;&nbsp;
+                    <button onClick={this.cancel.bind(this)}>Cancel</button>
                 </p>
-            </div>
+            </form>
         );
     }
 }
@@ -55,7 +94,12 @@ class Locations extends React.Component {
             });
     }
 
+    add(){
+        this.props.history.push('edit');
+    }
+    
     render(){
+
         var locations = this.state.locations.map((loc) => {
             return (
                 <tr key={loc.id}>
@@ -64,9 +108,9 @@ class Locations extends React.Component {
                     <td>{loc.state}</td>
                     <td>{loc.zipcode}</td>
                     <td>
-                        <Link to="edit" title="Edit">Edit</Link>
+                        <Link to={{ pathname:'edit/'+loc.id }} title="Edit">Edit</Link>
                         &nbsp;
-                        <Link to="delete" title="Delete">Delete</Link>
+                        <Link to={{ pathname:'delete/'+loc.id }}  title="Delete">Delete</Link>
                     </td>
                 </tr>
             );
@@ -75,7 +119,7 @@ class Locations extends React.Component {
         return (
             <div>
                 <h2>Locations</h2>
-                <p><button>Add New Location</button></p>
+                <p><button onClick={this.add.bind(this)}>Add New Location</button></p>
                 <table border="1" cellSpacing="1" cellPadding="5">
                     <thead>
                         <tr>
@@ -97,7 +141,7 @@ class Main extends React.Component {
                 <Router>
                     <Switch>
                         <Route exact path="/" component={Locations} />
-                        <Route name="edit" path="/edit" component={Edit} />
+                        <Route  path="/edit/:id?" component={Edit} />
                         <Route component={NoMatch} />
                     </Switch> 
                 </Router>
