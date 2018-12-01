@@ -13,17 +13,17 @@ class Edit extends React.Component {
         this.state = {location: {address: '', city: '', state: '', zipcode: ''}};
         this.updateLocation = this.updateLocation.bind(this);
     }
-    /*componentDidMount() {
+    componentDidMount() {
         var component = this;
         if(this.props.match.params.id){
             axios.get(BASE_URL+'/'+this.props.match.params.id)
                 .then(function(response){
-                    //component.state = {...component.state, location: response.data};
+                    component.setState({...component.state, location: response.data});
                 }).catch(function(err){
-                    //console.error('ERROR:'+err);
+                    console.error('ERROR:'+err);
                 });
         }
-    }*/
+    }
     updateLocation(e) {
         //alternative away
         //this.state.location[e.target.name] = e.target.value;
@@ -52,14 +52,14 @@ class EditForm extends React.Component{
         return (
             <form onSubmit={this.props.saveHandler}>
                 <h2>{this.props.location.id ? 'Edit Location' : 'New Location'}</h2>
-                {this.props.location.id && 'Address'}
-                <p><input type="text" value={this.props.location.address} name="address" onChange={this.props.changeHandler} placeholder="Address" /></p>
-                {this.props.location.id && 'City'}
-                <p><input type="text" value={this.props.location.city} name="city" onChange={this.props.changeHandler} placeholder="City" /></p>
-                {this.props.location.id && 'State'}
-                <p><input type="text" value={this.props.location.state} name="state" onChange={this.props.changeHandler} placeholder="State" /></p>
-                {this.props.location.id && 'Code'}
-                <p><input type="text" value={this.props.location.zipcode} name="zipcode" onChange={this.props.changeHandler} placeholder="Zip Code" /></p>
+                <b>{this.props.location.id && 'Address'}</b>
+                <p><input type="text" value={this.props.location.address} name="address" onChange={this.props.changeHandler} placeholder="Address" size="50" /></p>
+                <b>{this.props.location.id && 'City'}</b>
+                <p><input type="text" value={this.props.location.city} name="city" onChange={this.props.changeHandler} placeholder="City" size="30" /></p>
+                <b>{this.props.location.id && 'State'}</b>
+                <p><input type="text" value={this.props.location.state} name="state" onChange={this.props.changeHandler} placeholder="State" size="30" /></p>
+                <b>{this.props.location.id && 'Code'}</b>
+                <p><input type="text" value={this.props.location.zipcode} name="zipcode" onChange={this.props.changeHandler} placeholder="Zip Code" size="30" /></p>
                 <p>
                     <input type="submit" value="Save" />
                     &nbsp;&nbsp;
