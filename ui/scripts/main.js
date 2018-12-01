@@ -8,82 +8,84 @@ const BASE_URL = 'http://localhost:3000/api/locations';
 
 //TODO use browserify so that require these from separate file rather than in same file
 class Edit extends React.Component {
-    constructor(props){
-        super(props);
-        this.state = {location: {}};
+    constructor(){
+        super();
+        this.state = {location: {address: '', city: '', state: '', zipcode: ''}};
+        this.updateLocation = this.updateLocation.bind(this);
     }
-
-    componentDidMount() {
+    /*componentDidMount() {
         var component = this;
         if(this.props.match.params.id){
             axios.get(BASE_URL+'/'+this.props.match.params.id)
                 .then(function(response){
-                    component.state = {...component.state, location: response.data};
+                    //component.state = {...component.state, location: response.data};
                 }).catch(function(err){
-                    console.error('ERROR:'+err);
+                    //console.error('ERROR:'+err);
                 });
         }
+    }*/
+    updateLocation(e) {
+        //alternative away
+        //this.state.location[e.target.name] = e.target.value;
+        //this.setState({location: this.state.location});
+        this.setState({...this.state, location: {...this.state.location, [e.target.name]: e.target.value}});
     }
-
-    onChange() {
-        console.log('Change..');
-    }
-
     save(e) {
         e.preventDefault();
         console.log('Saving..');
         this.props.history.goBack();
     }
-
     cancel(e) {
         e.preventDefault();
         this.props.history.goBack();
     }
-
     render() {
         return (
-            <form onSubmit={this.save.bind(this)}>
-                <h2>{this.props.match.params.id ? 'Edit Location' : 'New Location'}</h2>
-                {this.props.match.params.id && 'Address'}
-                <p><input value={this.state.location.address} onChange={this.onChange} placeholder="Address" /></p>
-                {this.props.match.params.id && 'City'}
-                <p><input value={this.state.location.city} onChange={this.onChange} placeholder="City" /></p>
-                {this.props.match.params.id && 'State'}
-                <p><input value={this.state.location.state} onChange={this.onChange} placeholder="State" /></p>
-                {this.props.match.params.id && 'Code'}
-                <p><input value={this.state.location.zipcode} onChange={this.onChange} placeholder="Zip Code" /></p>
+            <EditForm location={this.state.location} changeHandler={this.updateLocation} 
+            saveHandler={this.save.bind(this)} cancelHandler={this.cancel.bind(this)} />    
+        );
+    }
+}
+
+class EditForm extends React.Component{
+    render() {
+        return (
+            <form onSubmit={this.props.saveHandler}>
+                <h2>{this.props.location.id ? 'Edit Location' : 'New Location'}</h2>
+                {this.props.location.id && 'Address'}
+                <p><input type="text" value={this.props.location.address} name="address" onChange={this.props.changeHandler} placeholder="Address" /></p>
+                {this.props.location.id && 'City'}
+                <p><input type="text" value={this.props.location.city} name="city" onChange={this.props.changeHandler} placeholder="City" /></p>
+                {this.props.location.id && 'State'}
+                <p><input type="text" value={this.props.location.state} name="state" onChange={this.props.changeHandler} placeholder="State" /></p>
+                {this.props.location.id && 'Code'}
+                <p><input type="text" value={this.props.location.zipcode} name="zipcode" onChange={this.props.changeHandler} placeholder="Zip Code" /></p>
                 <p>
-                    <button type="submit">Save</button>
+                    <input type="submit" value="Save" />
                     &nbsp;&nbsp;
-                    <button onClick={this.cancel.bind(this)}>Cancel</button>
+                    <button onClick={this.props.cancelHandler}>Cancel</button>
                 </p>
             </form>
         );
     }
 }
 
-class NoMatch extends React.Component { 
-    render() {
-        return (
-            <div>
-                <h3>Page Not Fond</h3>
-                <p>
-                    <Link to="/">Home</Link>
-                </p>
-            </div>
-        );
-    }
+function NoMatch() {
+    return (
+        <div>
+            <h3>Page Not Fond</h3>
+            <p><Link to="/">Home</Link></p>
+        </div>
+    );
 }
 
 class Locations extends React.Component {
-
-    constructor(props){
-        super(props);
+    constructor(){
+        super();
         this.state = {
             locations : []
         };
     }
-
     componentDidMount(){
         var component = this;
         axios.get(BASE_URL)
@@ -93,13 +95,10 @@ class Locations extends React.Component {
                 console.error('ERROR:'+err);
             });
     }
-
     add(){
         this.props.history.push('edit');
     }
-    
     render(){
-
         var locations = this.state.locations.map((loc) => {
             return (
                 <tr key={loc.id}>
@@ -133,22 +132,18 @@ class Locations extends React.Component {
     }   
 }
 
-class Main extends React.Component {
-
-    render() {
-        return (
-            <div>
-                <Router>
-                    <Switch>
-                        <Route exact path="/" component={Locations} />
-                        <Route  path="/edit/:id?" component={Edit} />
-                        <Route component={NoMatch} />
-                    </Switch> 
-                </Router>
-            </div>
-        );
-    }
-
+function Main() {
+    return (
+        <div>
+            <Router>
+                <Switch>
+                    <Route exact name="home" path="/" component={Locations} />
+                    <Route name="edit" path="/edit/:id?" component={Edit} />
+                    <Route component={NoMatch} />
+                </Switch> 
+            </Router>
+        </div>
+    );
 }
 
 ReactDOM.render(<Main />, root);
