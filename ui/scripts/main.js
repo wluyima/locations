@@ -18,7 +18,7 @@ class Edit extends React.Component {
         if(this.props.match.params.id){
             axios.get(BASE_URL+'/'+this.props.match.params.id)
                 .then(function(response){
-                    component.setState({...component.state, location: response.data});
+                    component.setState({ ...component.state, location: response.data });
                 }).catch(function(err){
                     console.error('ERROR:'+err);
                 });
@@ -28,12 +28,28 @@ class Edit extends React.Component {
         //alternative away
         //this.state.location[e.target.name] = e.target.value;
         //this.setState({location: this.state.location});
-        this.setState({...this.state, location: {...this.state.location, [e.target.name]: e.target.value}});
+        this.setState({ ...this.state, location: { ...this.state.location, [e.target.name]: e.target.value } });
     }
     save(e) {
         e.preventDefault();
-        console.log('Saving..');
-        this.props.history.goBack();
+        var component = this;
+        if(this.props.match.params.id) {
+            axios.put(BASE_URL+'/'+this.props.match.params.id, this.state.location)
+                .then(function(response){
+                    component.setState({ ...component.state, location: response.data });
+                    component.props.history.goBack();
+                }).catch(function(err){
+                    console.error('ERROR:'+err);
+                });
+        }else {
+            axios.post(BASE_URL, this.state.location)
+                .then(function(response){
+                    component.setState({ ...component.state, location: response.data });
+                    component.props.history.goBack();
+                }).catch(function(err){
+                    console.error('ERROR:'+err);
+                });
+        }
     }
     cancel(e) {
         e.preventDefault();
