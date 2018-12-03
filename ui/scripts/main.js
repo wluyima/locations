@@ -12,12 +12,8 @@ class Edit extends React.Component {
         super();
         this.state = {
             location: {address: '', city: '', state: '', zipcode: ''},
-            errors: {
-                address: {required: true},
-                city: {required: true},
-                state: {required: true},
-                zipcode: {required: true}
-            }
+            status: {address: {dirty: false}, city: {dirty: false}, state: {dirty: false}, zipcode: {dirty: false}},
+            errors: {address: {required: true}, city: {required: true}, state: {required: true}, zipcode: {required: true}}
         };
         this.updateLocation = this.updateLocation.bind(this);
     }
@@ -33,10 +29,26 @@ class Edit extends React.Component {
         }
     }
     updateLocation(e) {
+        var propertyName = e.target.name;
+        var value = e.target.value;
         //alternative away
-        //this.state.location[e.target.name] = e.target.value;
+        //this.state.location[propertyName] = value;
         //this.setState({location: this.state.location});
-        this.setState({ ...this.state, location: { ...this.state.location, [e.target.name]: e.target.value } });
+        this.setState({ ...this.state,
+            location: { ...this.state.location, 
+                [propertyName]: value 
+            },
+            status: { ...this.state.status, 
+                [propertyName]: {  
+                    dirty: true
+                } 
+            },
+            errors: { ...this.state.errors, 
+                [propertyName]: {
+                    required: value.trim().length === 0 
+                } 
+            }
+        });
     }
     save(e) {
         e.preventDefault();
@@ -63,24 +75,34 @@ class Edit extends React.Component {
         e.preventDefault();
         this.props.history.goBack();
     }
+    hasErrors() {
+        var values = Object.values(this.state.errors);
+        for (var i in values) {
+            if(values[i].required){
+                return true;
+            }    
+        }
+        return false; 
+    }
     render() {
         return (
             <EditForm location={this.state.location} changeHandler={this.updateLocation} saveHandler={this.save.bind(this)} 
-                cancelHandler={this.cancel.bind(this)} errors={this.state.errors} />    
+                cancelHandler={this.cancel.bind(this)} errors={this.state.errors} status={this.state.status} 
+                hasErrorsHandler={this.hasErrors.bind(this)} />    
         );
     }
 }
 
 function EditForm(props) {
     return (
-        <form onSubmit={props.saveHandler}>
+        <form onSubmit={props.saveHandler} autoComplete='off'>
             <h2>{props.location.id ? 'Edit Location' : 'New Location'}</h2>
-            <TextInput id={props.location.id} name="address" label="Address" value={props.location.address} changeHandler={props.changeHandler} size="50" />
-            <TextInput id={props.location.id} name="city" label="City" value={props.location.city} changeHandler={props.changeHandler} size="30" />
-            <TextInput id={props.location.id} name="state" label="State" value={props.location.state} changeHandler={props.changeHandler} size="30" />
-            <TextInput id={props.location.id} name="zipcode" label="Zip Code" value={props.location.zipcode} changeHandler={props.changeHandler} size="30" />
+            <TextInput id={props.location.id} name="address" label="Address" value={props.location.address} changeHandler={props.changeHandler} size="50" errors={props.errors} status={props.status} />
+            <TextInput id={props.location.id} name="city" label="City" value={props.location.city} changeHandler={props.changeHandler} size="30" errors={props.errors} status={props.status} />
+            <TextInput id={props.location.id} name="state" label="State" value={props.location.state} changeHandler={props.changeHandler} size="30" errors={props.errors} status={props.status} />
+            <TextInput id={props.location.id} name="zipcode" label="Zip Code" value={props.location.zipcode} changeHandler={props.changeHandler} size="30" errors={props.errors} status={props.status} />
             <p>
-                <input type="submit" value="Save" disabled={Object.keys(props.errors).length > 0 && 'disabled'} />
+                <input type="submit" value="Save" disabled={props.hasErrorsHandler() && 'disabled'} />
                 &nbsp;&nbsp;
                 <button onClick={props.cancelHandler}>Cancel</button>
             </p>
@@ -93,9 +115,12 @@ function TextInput(props){
         <div>
             <b>{props.id && props.label}</b>
             <p>
-                <input type="text" value={props.value}  name={props.name}  onChange={props.changeHandler}  
-                    placeholder={props.label}  size={props.size} />
+                <input type="text" value={props.value} name={props.name} onChange={props.changeHandler}  
+                    placeholder={props.label} size={props.size} />
             </p>
+            <div className={!props.status[props.name].dirty || !props.errors[props.name].required ? 'hide' : undefined}>
+                <span className="errors">{props.label} is required</span>
+            </div>
         </div>
     );
 }
