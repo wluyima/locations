@@ -71,27 +71,33 @@ class Edit extends React.Component {
     }
 }
 
-class EditForm extends React.Component{
-    render() {
-        return (
-            <form onSubmit={this.props.saveHandler}>
-                <h2>{this.props.location.id ? 'Edit Location' : 'New Location'}</h2>
-                <b>{this.props.location.id && 'Address'}</b>
-                <p><input type="text" value={this.props.location.address} name="address" onChange={this.props.changeHandler} placeholder="Address" size="50" /></p>
-                <b>{this.props.location.id && 'City'}</b>
-                <p><input type="text" value={this.props.location.city} name="city" onChange={this.props.changeHandler} placeholder="City" size="30" /></p>
-                <b>{this.props.location.id && 'State'}</b>
-                <p><input type="text" value={this.props.location.state} name="state" onChange={this.props.changeHandler} placeholder="State" size="30" /></p>
-                <b>{this.props.location.id && 'Code'}</b>
-                <p><input type="text" value={this.props.location.zipcode} name="zipcode" onChange={this.props.changeHandler} placeholder="Zip Code" size="30" /></p>
-                <p>
-                    <input type="submit" value="Save" disabled={Object.keys(this.props.errors).length > 0 && 'disabled'} />
-                    &nbsp;&nbsp;
-                    <button onClick={this.props.cancelHandler}>Cancel</button>{Object.keys(this.props.errors).length}
-                </p>
-            </form>
-        );
-    }
+function EditForm(props) {
+    return (
+        <form onSubmit={props.saveHandler}>
+            <h2>{props.location.id ? 'Edit Location' : 'New Location'}</h2>
+            <TextInput id={props.location.id} name="address" label="Address" value={props.location.address} changeHandler={props.changeHandler} size="50" />
+            <TextInput id={props.location.id} name="city" label="City" value={props.location.city} changeHandler={props.changeHandler} size="30" />
+            <TextInput id={props.location.id} name="state" label="State" value={props.location.state} changeHandler={props.changeHandler} size="30" />
+            <TextInput id={props.location.id} name="zipcode" label="Zip Code" value={props.location.zipcode} changeHandler={props.changeHandler} size="30" />
+            <p>
+                <input type="submit" value="Save" disabled={Object.keys(props.errors).length > 0 && 'disabled'} />
+                &nbsp;&nbsp;
+                <button onClick={props.cancelHandler}>Cancel</button>
+            </p>
+        </form>
+    );
+}
+
+function TextInput(props){
+    return (
+        <div>
+            <b>{props.id && props.label}</b>
+            <p>
+                <input type="text" value={props.value}  name={props.name}  onChange={props.changeHandler}  
+                    placeholder={props.label}  size={props.size} />
+            </p>
+        </div>
+    );
 }
 
 function NoMatch() {
