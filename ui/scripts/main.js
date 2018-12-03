@@ -10,7 +10,15 @@ const BASE_URL = 'http://localhost:3000/api/locations';
 class Edit extends React.Component {
     constructor(){
         super();
-        this.state = {location: {address: '', city: '', state: '', zipcode: ''}};
+        this.state = {
+            location: {address: '', city: '', state: '', zipcode: ''},
+            errors: {
+                address: {required: true},
+                city: {required: true},
+                state: {required: true},
+                zipcode: {required: true}
+            }
+        };
         this.updateLocation = this.updateLocation.bind(this);
     }
     componentDidMount() {
@@ -57,8 +65,8 @@ class Edit extends React.Component {
     }
     render() {
         return (
-            <EditForm location={this.state.location} changeHandler={this.updateLocation} 
-            saveHandler={this.save.bind(this)} cancelHandler={this.cancel.bind(this)} />    
+            <EditForm location={this.state.location} changeHandler={this.updateLocation} saveHandler={this.save.bind(this)} 
+                cancelHandler={this.cancel.bind(this)} errors={this.state.errors} />    
         );
     }
 }
@@ -77,9 +85,9 @@ class EditForm extends React.Component{
                 <b>{this.props.location.id && 'Code'}</b>
                 <p><input type="text" value={this.props.location.zipcode} name="zipcode" onChange={this.props.changeHandler} placeholder="Zip Code" size="30" /></p>
                 <p>
-                    <input type="submit" value="Save" />
+                    <input type="submit" value="Save" disabled={Object.keys(this.props.errors).length > 0 && 'disabled'} />
                     &nbsp;&nbsp;
-                    <button onClick={this.props.cancelHandler}>Cancel</button>
+                    <button onClick={this.props.cancelHandler}>Cancel</button>{Object.keys(this.props.errors).length}
                 </p>
             </form>
         );
