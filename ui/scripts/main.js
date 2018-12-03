@@ -103,6 +103,9 @@ class Locations extends React.Component {
         };
     }
     componentDidMount(){
+       this.loadLocations();
+    }
+    loadLocations(){
         var component = this;
         axios.get(BASE_URL)
             .then(function(response){
@@ -114,6 +117,15 @@ class Locations extends React.Component {
     add(){
         this.props.history.push('edit');
     }
+    delete(loc){
+        var component = this;
+        axios.delete(BASE_URL+'/'+loc.id)
+            .then(function(){
+                component.loadLocations();
+            }).catch(function(err){
+                console.error('ERROR:'+err);
+            });
+    }
     render(){
         var locations = this.state.locations.map((loc) => {
             return (
@@ -124,8 +136,8 @@ class Locations extends React.Component {
                     <td>{loc.zipcode}</td>
                     <td>
                         <Link to={{ pathname:'edit/'+loc.id }} title="Edit">Edit</Link>
-                        &nbsp;
-                        <Link to={{ pathname:'delete/'+loc.id }}  title="Delete">Delete</Link>
+                        &nbsp;&nbsp;
+                        <button onClick={this.delete.bind(this, loc)} title="Delete">Delete</button>
                     </td>
                 </tr>
             );
