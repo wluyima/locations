@@ -3,8 +3,62 @@ const Router = ReactRouterDOM.BrowserRouter;
 const Route =  ReactRouterDOM.Route;
 const Link =  ReactRouterDOM.Link;
 const Switch = ReactRouterDOM.Switch;
+const dispatcher = new Flux.Dispatcher();
 
 const BASE_URL = 'http://localhost:3000/api/locations';
+const CHANGE_EVENT = 'change';
+
+//Dispatcher, Actions , Stores, StoreListeners
+class Store extends EventEmitter {
+    constructor(){
+        super();
+        this._locations = [];   
+    }
+    addChangeListener(callback){
+        this.on(CHANGE_EVENT, callback);
+    }
+    removeChangeListener(callback){
+        this.removeListener(CHANGE_EVENT, callback);
+    }
+    emitChange(){
+        this.emit(CHANGE_EVENT);
+    }
+    getLocations(){
+        return this._locations;
+    }
+    setLocations(locations){
+        this._locations = locations;
+    }
+}
+
+store = new Store();
+
+actions = {
+    fireGetAll: function(){
+        axios.get(BASE_URL)
+        .then(function(response){
+            dispatcher.dispatch({
+                type: 'LOADED',
+                payload: response.data
+            });
+        }).catch(function(err){
+            console.error('ERROR:'+err);
+        });
+    }
+}
+
+dispatcher.register(function(action) {
+    switch(action.type){
+        case 'LOADED':
+            store.setLocations(action.payload);
+            //This line is the actually where the registration takes effect
+            store.emitChange();
+            break;
+        default: 
+            //Do nothing    
+    }
+
+});
 
 //TODO use browserify so that require these from separate file rather than in same file
 class Edit extends React.Component {
@@ -138,29 +192,29 @@ class Locations extends React.Component {
     constructor(){
         super();
         this.state = {
-            locations : []
+            locations : store.getLocations() 
         };
+        this._onLoaded = this._onLoaded.bind(this);
+    }
+    _onLoaded(){
+        this.setState({ ...this.state, locations: store.getLocations() });    
+    }
+    componentWillMount(){
+        store.addChangeListener(this._onLoaded);
     }
     componentDidMount(){
-       this.loadLocations();
+        actions.fireGetAll();
     }
-    loadLocations(){
-        var component = this;
-        axios.get(BASE_URL)
-            .then(function(response){
-                component.setState({...component.state, locations: response.data});
-            }).catch(function(err){
-                console.error('ERROR:'+err);
-            });
+    componentWillUnmount(){
+        store.removeChangeListener(this._onLoaded);
     }
     add(){
         this.props.history.push('edit');
     }
     delete(loc){
-        var component = this;
         axios.delete(BASE_URL+'/'+loc.id)
             .then(function(){
-                component.loadLocations();
+                actions.fireGetAll();
             }).catch(function(err){
                 console.error('ERROR:'+err);
             });
