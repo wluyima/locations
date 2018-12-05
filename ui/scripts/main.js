@@ -77,6 +77,7 @@ class Edit extends React.Component {
             axios.get(BASE_URL+'/'+this.props.match.params.id)
                 .then(function(response){
                     component.setState({ ...component.state, location: response.data });
+                    component.validateForm();
                 }).catch(function(err){
                     console.error('ERROR:'+err);
                 });
@@ -128,6 +129,22 @@ class Edit extends React.Component {
     cancel(e) {
         e.preventDefault();
         this.props.history.goBack();
+    }
+    validateForm(){
+        var errors = this.state.errors;
+        for (var i in this.state.location) {
+            var property = i;
+            if('id' === property || 'created_at' === property || 'updated_at' === property){
+                continue;
+            }
+            var value = this.state.location[property];
+            if('zipcode' === property){
+                errors[property].required = isNaN(parseInt(value));
+            }else{
+                errors[property].required = !(value.trim().length > 0);
+            }
+        }
+        this.setState({...this.state, errors: errors});
     }
     hasErrors() {
         var values = Object.values(this.state.errors);
